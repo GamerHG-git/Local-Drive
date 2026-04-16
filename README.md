@@ -25,22 +25,30 @@ REQUIREMENTS
 INSTALLATION
 ------------
 1. Install dependencies:
-   pip install -r requirements.txt
+apt install python3.11
+pip install -r requirements.txt
 
-2. Configure .env file:
+3. Configure .env file:
+
    USERNAME=admin
+
    PASSWORD=password123
+
    SECRET_KEY=your-secret-key
 
-3. Run the app:
+5. Run the app:
+
    python app.py
 
-4. Open browser:
-   http://localhost:5000
+7. Open browser:
+
+    http://localhost:5000
 
 DEFAULT CREDENTIALS
 ------------------
+
 Username: admin
+
 Password: password123
 
 MEDIA SUPPORT
