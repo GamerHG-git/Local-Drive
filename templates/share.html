@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ file_name }} - Local Drive</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+        .logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+        .logo { width: 40px; height: 40px; object-fit: contain; }
+        .logo-text { font-size: 20px; font-weight: 600; color: #1f2937; }
+        .card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; width: 100%; max-width: 720px; padding: 32px; }
+        .icon-box { width: 80px; height: 80px; background: #f0fdf4; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .icon-box svg { width: 64px; height: 64px; color: #22c55e; flex-shrink: 0; }
+        .file-header { text-align: center; }
+        .file-name { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 4px; word-break: break-word; }
+        .file-size { font-size: 14px; color: #9ca3af; margin-bottom: 24px; }
+        .download-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #16a34a; color: #fff; padding: 14px; border-radius: 16px; font-size: 14px; font-weight: 500; text-decoration: none; transition: background 0.15s; }
+        .download-btn:hover { background: #15803d; }
+        .download-btn svg { width: 20px; height: 20px; color: #fff; }
+        
+        /* Folder contents styling */
+        .folder-contents { margin-top: 24px; border-top: 1px solid #e5e7eb; padding-top: 24px; }
+        .folder-title { font-size: 14px; font-weight: 600; color: #6b7280; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .file-list { display: flex; flex-direction: column; gap: 8px; }
+        .file-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; background: #f9fafb; border: 1px solid #f3f4f6; transition: background 0.15s; }
+        .file-item:hover { background: #f3f4f6; }
+        .file-item-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #6b7280; }
+        .file-item-icon svg { width: 24px; height: 24px; }
+        .file-item-info { flex: 1; min-width: 0; }
+        .file-item-name { font-size: 14px; font-weight: 500; color: #1f2937; word-break: break-word; }
+        .file-item-size { font-size: 12px; color: #d1d5db; margin-top: 2px; }
+        .empty-folder { text-align: center; color: #9ca3af; padding: 20px; }
+        
+        .hint { font-size: 12px; color: #d1d5db; margin-top: 16px; text-align: center; }
+        @media (prefers-color-scheme: dark) {
+            body { background: #111; }
+            .logo-text { color: #eee; }
+            .card { background: #1a1a1a; border-color: #333; }
+            .file-name { color: #eee; }
+            .hint { color: #666; }
+            .file-item { background: #1f1f1f; border-color: #333; }
+            .file-item:hover { background: #2a2a2a; }
+            .file-item-name { color: #eee; }
+            .file-item-icon { color: #9ca3af; }
+            .folder-title { color: #9ca3af; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-row">
+         <img src="/static/Ldrivelogo.png" class="logo" alt="Local Drive">
+         <span class="logo-text">Local Drive</span>
+     </div>
+
+    <div class="card">
+        <div class="file-header">
+            <div class="icon-box">
+                {{ file_icon | safe }}
+            </div>
+            <h1 class="file-name">{{ file_name }}</h1>
+            {% if file_size %}
+                <p class="file-size">{{ file_size }}</p>
+            {% endif %}
+        </div>
+        
+        <a href="/s/{{ token }}/download" class="download-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>{% if is_dir %}Download Folder{% else %}Download{% endif %}</span>
+        </a>
+        
+        {% if is_dir and items %}
+            <div class="folder-contents">
+                <div class="folder-title">Contents</div>
+                {% if items %}
+                    <div class="file-list">
+                        {% for item in items %}
+                            <div class="file-item">
+                                <div class="file-item-icon">
+                                    {{ file_icon_svg(item.icon, "sm") | safe }}
+                                </div>
+                                <div class="file-item-info">
+                                    <div class="file-item-name">{{ item.name }}</div>
+                                    {% if item.size %}
+                                        <div class="file-item-size">{{ "{:.2f}".format(item.size / (1024*1024)) }} MB</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-folder">This folder is empty</div>
+                {% endif %}
+            </div>
+        {% elif is_dir and not items %}
+            <div class="folder-contents">
+                <div class="empty-folder">This folder is empty</div>
+            </div>
+        {% endif %}
+        
+        <p class="hint">Shared via Local Drive</p>
+    </div>
+</body>
+</html>
