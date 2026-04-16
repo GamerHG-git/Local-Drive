@@ -28,8 +28,8 @@ INSTALLATION
    pip install -r requirements.txt
 
 2. Configure .env file:
-   APP_USERNAME=admin
-   APP_PASSWORD=password123
+   USERNAME=admin
+   PASSWORD=password123
    SECRET_KEY=your-secret-key
 
 3. Run the app:
